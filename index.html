@@ -85,135 +85,156 @@
     </main>
   </div>
 
-  <script>
-    // Dữ liệu Kanji 1-10
-    const kanjiData = [
-      {k:'一', han:'Nhất', on:['イチ','イツ'], kun:['ひとつ','ひと'], meaning:'Một', examples:['一人（ひとり）: một người','一日（いちにち）: một ngày']},
-      {k:'二', han:'Nhị', on:['ニ'], kun:['ふたつ','ふた'], meaning:'Hai', examples:['二人（ふたり）: hai người','二月（にがつ）: tháng hai']},
-      {k:'三', han:'Tam', on:['サン'], kun:['みっつ','み'], meaning:'Ba', examples:['三人（さんにん）: ba người','三日（みっか）: ngày mùng ba']},
-      {k:'四', han:'Tứ', on:['シ'], kun:['よっつ','よん','よ'], meaning:'Bốn', examples:['四人（よにん）: bốn người','四月（しがつ）: tháng tư']},
-      {k:'五', han:'Ngũ', on:['ゴ'], kun:['いつつ','いつ'], meaning:'Năm', examples:['五人（ごにん）: năm người','五月（ごがつ）: tháng năm']},
-      {k:'六', han:'Lục', on:['ロク'], kun:['むっつ','むい','む'], meaning:'Sáu', examples:['六人（ろくにん）: sáu người','六日（むいか）: ngày mùng sáu']},
-      {k:'七', han:'Thất', on:['シチ'], kun:['ななつ','なな'], meaning:'Bảy', examples:['七人（しちにん／ななにん）: bảy người','七月（しちがつ）: tháng bảy']},
-      {k:'八', han:'Bát', on:['ハチ'], kun:['やっつ','や','よう'], meaning:'Tám', examples:['八人（はちにん）: tám người','八日（ようか）: ngày mùng tám']},
-      {k:'九', han:'Cửu', on:['キュウ','ク'], kun:['ここのつ'], meaning:'Chín', examples:['九人（きゅうにん）: chín người','九日（ここのか）: ngày mùng chín']},
-      {k:'十', han:'Thập', on:['ジュウ','ジッ'], kun:['とお','と'], meaning:'Mười', examples:['十人（じゅうにん）: mười người','十日（とおか）: ngày mười']}
-    ];
+<script>
+  // Dữ liệu Kanji 1-10
+  const kanjiData = [
+    {k:'一', han:'Nhất', on:['イチ','イツ'], kun:['ひとつ','ひと'], meaning:'Một', examples:['一人（ひとり）: một người','一日（いちにち）: một ngày']},
+    {k:'二', han:'Nhị', on:['ニ'], kun:['ふたつ','ふた'], meaning:'Hai', examples:['二人（ふたり）: hai người','二月（にがつ）: tháng hai']},
+    {k:'三', han:'Tam', on:['サン'], kun:['みっつ','み'], meaning:'Ba', examples:['三人（さんにん）: ba người','三日（みっか）: ngày mùng ba']},
+    {k:'四', han:'Tứ', on:['シ'], kun:['よっつ','よん','よ'], meaning:'Bốn', examples:['四人（よにん）: bốn người','四月（しがつ）: tháng tư']},
+    {k:'五', han:'Ngũ', on:['ゴ'], kun:['いつつ','いつ'], meaning:'Năm', examples:['五人（ごにん）: năm người','五月（ごがつ）: tháng năm']},
+    {k:'六', han:'Lục', on:['ロク'], kun:['むっつ','むい','む'], meaning:'Sáu', examples:['六人（ろくにん）: sáu người','六日（むいか）: ngày mùng sáu']},
+    {k:'七', han:'Thất', on:['シチ'], kun:['ななつ','なな'], meaning:'Bảy', examples:['七人（しちにん／ななにん）: bảy người','七月（しちがつ）: tháng bảy']},
+    {k:'八', han:'Bát', on:['ハチ'], kun:['やっつ','や','よう'], meaning:'Tám', examples:['八人（はちにん）: tám người','八日（ようか）: ngày mùng tám']},
+    {k:'九', han:'Cửu', on:['キュウ','ク'], kun:['ここのつ'], meaning:'Chín', examples:['九人（きゅうにん）: chín người','九日（ここのか）: ngày mùng chín']},
+    {k:'十', han:'Thập', on:['ジュウ','ジッ'], kun:['とお','と'], meaning:'Mười', examples:['十人（じゅうにん）: mười người','十日（とおか）: ngày mười']}
+  ];
 
-    // State
-    let showOnKun = true;
-    let showHanViet = true;
-    let showExamples = true;
+  // --- Biến trạng thái
+  let showOnKun = true, showHanViet = true, showExamples = true;
+  const cardsEl = document.getElementById('cards');
+  const searchEl = document.getElementById('search');
+  const toggleReadingsBtn = document.getElementById('toggleReadings');
+  const showOnKunBtn = document.getElementById('showOnKun');
+  const showHanVietBtn = document.getElementById('showHanViet');
+  const showExamplesBtn = document.getElementById('showExamples');
+  const startQuizBtn = document.getElementById('startQuiz');
+  const quizArea = document.getElementById('quizArea');
+  const speakAllBtn = document.getElementById('speakAll');
 
-    const cardsEl = document.getElementById('cards');
-    const searchEl = document.getElementById('search');
-    const toggleReadingsBtn = document.getElementById('toggleReadings');
-    const showOnKunBtn = document.getElementById('showOnKun');
-    const showHanVietBtn = document.getElementById('showHanViet');
-    const showExamplesBtn = document.getElementById('showExamples');
-    const startQuizBtn = document.getElementById('startQuiz');
-    const quizArea = document.getElementById('quizArea');
-    const speakAllBtn = document.getElementById('speakAll');
-
-    function renderCards(filter=''){
-      cardsEl.innerHTML='';
-      const q = filter.trim().toLowerCase();
-      kanjiData.filter(item=>{
-        if(!q) return true;
-        return [item.k,item.han,item.meaning,item.on.join(' '),item.kun.join(' '),...item.examples].join(' ').toLowerCase().includes(q);
-      }).forEach(item=>{
-        const div = document.createElement('div'); div.className='card';
-        div.innerHTML = `
-          <div>
-            <div class="kanji">${item.k}</div>
-            ${showHanViet?`<div class="meta"><div class="chip hanviet">${item.han}</div><div class="chip">${item.meaning}</div></div>`:''}
-            <div class="meta">${showOnKun?`<div class="chip">On: ${item.on.join(', ')}</div><div class="chip">Kun: ${item.kun.join(', ')}</div>`:''}</div>
-            ${showExamples?`<div class="examples">${item.examples.join('<br>')}</div>`:''}
-          </div>
-        `;
-        div.addEventListener('click',()=> speak(item.k));
-        cardsEl.appendChild(div);
-      });
-    }
-
-    function speak(text){
-      if(!window.speechSynthesis) return alert('Trình duyệt không hỗ trợ Speech Synthesis');
-      const utter = new SpeechSynthesisUtterance(text);
-      // cố gắng chọn giọng Nhật
-      const voices = window.speechSynthesis.getVoices();
-      const jp = voices.find(v=>v.lang && v.lang.startsWith('ja')) || voices[0];
-      if(jp) utter.voice = jp;
-      utter.lang = 'ja-JP';
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
-    }
-
-    // Controls
-    searchEl.addEventListener('input', e=> renderCards(e.target.value));
-    toggleReadingsBtn.addEventListener('click', ()=>{
-      showOnKun = !showOnKun; showHanViet = !showHanViet; showExamples = !showExamples; renderCards(searchEl.value);
+  // --- Render Kanji cards
+  function renderCards(filter=''){
+    cardsEl.innerHTML='';
+    const q = filter.trim().toLowerCase();
+    kanjiData.filter(item=>{
+      if(!q) return true;
+      return [item.k,item.han,item.meaning,item.on.join(' '),item.kun.join(' '),...item.examples].join(' ').toLowerCase().includes(q);
+    }).forEach(item=>{
+      const div=document.createElement('div');
+      div.className='card';
+      div.innerHTML=`
+        <div>
+          <div class="kanji">${item.k}</div>
+          ${showHanViet?`<div class="meta"><div class="chip hanviet">${item.han}</div><div class="chip">${item.meaning}</div></div>`:''}
+          <div class="meta">${showOnKun?`<div class="chip">On: ${item.on.join(', ')}</div><div class="chip">Kun: ${item.kun.join(', ')}</div>`:''}</div>
+          ${showExamples?`<div class="examples">${item.examples.join('<br>')}</div>`:''}
+        </div>`;
+      div.addEventListener('click',()=>speak(item.k));
+      cardsEl.appendChild(div);
     });
-    showOnKunBtn.addEventListener('click', ()=>{ showOnKun = !showOnKun; renderCards(searchEl.value); });
-    showHanVietBtn.addEventListener('click', ()=>{ showHanViet = !showHanViet; renderCards(searchEl.value); });
-    showExamplesBtn.addEventListener('click', ()=>{ showExamples = !showExamples; renderCards(searchEl.value); });
+  }
 
-    speakAllBtn.addEventListener('click', ()=>{
-      // phát âm 3 chữ/giây để không spam
-      let i=0; const t = setInterval(()=>{
-        if(i>=kanjiData.length){ clearInterval(t); return; }
-        speak(kanjiData[i].k); i++;
-      },900);
+  // --- Phát âm
+  function speak(text){
+    if(!window.speechSynthesis) return alert('Trình duyệt không hỗ trợ Speech Synthesis');
+    const utter=new SpeechSynthesisUtterance(text);
+    const voices=window.speechSynthesis.getVoices();
+    const jp=voices.find(v=>v.lang && v.lang.startsWith('ja'))||voices[0];
+    if(jp) utter.voice=jp;
+    utter.lang='ja-JP';
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+  }
+
+  // --- Điều khiển hiển thị
+  searchEl.addEventListener('input',e=>renderCards(e.target.value));
+  toggleReadingsBtn.addEventListener('click',()=>{
+    showOnKun=!showOnKun;showHanViet=!showHanViet;showExamples=!showExamples;renderCards(searchEl.value);
+  });
+  showOnKunBtn.addEventListener('click',()=>{showOnKun=!showOnKun;renderCards(searchEl.value);});
+  showHanVietBtn.addEventListener('click',()=>{showHanViet=!showHanViet;renderCards(searchEl.value);});
+  showExamplesBtn.addEventListener('click',()=>{showExamples=!showExamples;renderCards(searchEl.value);});
+  speakAllBtn.addEventListener('click',()=>{
+    let i=0;const t=setInterval(()=>{
+      if(i>=kanjiData.length){clearInterval(t);return;}
+      speak(kanjiData[i].k);i++;
+    },900);
+  });
+
+  // --- Quiz logic (3 loại)
+  let quizState=null;
+  startQuizBtn.addEventListener('click',startQuiz);
+
+  function startQuiz(){
+    const pool=shuffleArray(kanjiData);
+    quizState={pool,idx:0,score:0};
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    if(!quizState) return;
+    const cur=quizState.pool[quizState.idx];
+    const type=Math.floor(Math.random()*3); // 0: Kanji→Hán-Việt, 1: Ví dụ→nghĩa, 2: Điền Kanji
+    let html='',correct='',choices=[];
+
+    if(type===0){
+      // Loại 1: Kanji → chọn Hán-Việt
+      const others=pickN(kanjiData.filter(x=>x.k!==cur.k),3).map(x=>x.han);
+      choices=shuffleArray([cur.han,...others]);
+      correct=cur.han;
+      html=`<p class="question">Chọn <b>Hán-Việt</b> đúng cho: <span style="font-size:32px">${cur.k}</span></p>`;
+    }else if(type===1){
+      // Loại 2: Ví dụ → chọn nghĩa đúng
+      const ex=cur.examples[Math.floor(Math.random()*cur.examples.length)];
+      const others=pickN(kanjiData.filter(x=>x.k!==cur.k),3).map(x=>x.meaning);
+      choices=shuffleArray([cur.meaning,...others]);
+      correct=cur.meaning;
+      html=`<p class="question">Trong ví dụ: 「${ex.split(':')[0]}」<br>Chữ <b>${cur.k}</b> có nghĩa là gì?</p>`;
+    }else{
+      // Loại 3: Điền Kanji thích hợp
+      const sentence=cur.examples[0].split(':')[0].replace(cur.k,'＿');
+      const others=pickN(kanjiData.filter(x=>x.k!==cur.k),3).map(x=>x.k);
+      choices=shuffleArray([cur.k,...others]);
+      correct=cur.k;
+      html=`<p class="question">Điền Kanji thích hợp: 「${sentence}」</p>`;
+    }
+
+    html+=`<div class="options">${choices.map((c,i)=>`<div class="opt" data-choice="${c}">${i+1}. ${c}</div>`).join('')}</div>
+           <div style="margin-top:8px;color:var(--muted)">Câu ${quizState.idx+1}/${quizState.pool.length} — Điểm: ${quizState.score}</div>`;
+    quizArea.innerHTML=html;
+    document.querySelectorAll('.opt').forEach(el=>el.addEventListener('click',e=>onAnswer(e,correct)));
+  }
+
+  function onAnswer(e,correct){
+    const selected=e.currentTarget.dataset.choice;
+    if(selected===correct){
+      quizState.score++;
+      e.currentTarget.style.background='#083';
+      e.currentTarget.style.borderColor='#6f6';
+    }else{
+      e.currentTarget.style.background='#300';
+      e.currentTarget.style.borderColor='#f44';
+    }
+    // highlight đúng
+    document.querySelectorAll('.opt').forEach(el=>{
+      if(el.dataset.choice===correct) el.style.outline='2px solid rgba(255,222,122,0.5)';
     });
+    quizState.idx++;
+    setTimeout(()=>{
+      if(quizState.idx>=quizState.pool.length){
+        quizArea.innerHTML=`<p class="question">✅ Hoàn thành! Điểm: ${quizState.score}/${quizState.pool.length}</p>
+                            <button id="retry">Chơi lại</button>`;
+        document.getElementById('retry').addEventListener('click',startQuiz);
+      }else renderQuestion();
+    },900);
+  }
 
-    // --- Quiz logic ---
-    let quizState = null;
-    startQuizBtn.addEventListener('click', startQuiz);
+  // --- Tiện ích
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+  function shuffleArray(a){const r=a.slice();shuffle(r);return r;}
+  function pickN(arr,n){const c=arr.slice();shuffle(c);return c.slice(0,n);}
+  renderCards();
+</script>
 
-    function startQuiz(){
-      // quiz: hiển thị Kanji -> chọn nghĩa Hán-Việt
-      const pool = kanjiData.slice();
-      shuffle(pool);
-      quizState = {pool, idx:0, score:0};
-      renderQuestion();
-    }
-
-    function renderQuestion(){
-      if(!quizState) return;
-      const cur = quizState.pool[quizState.idx];
-      const other = pickN(kanjiData.filter(x=>x.k!==cur.k),3).map(x=>x.han);
-      const choices = shuffleArray([cur.han,...other]);
-      quizArea.innerHTML = `
-        <p class="question">Chọn Hán‑Việt đúng cho: <strong style="font-size:30px">${cur.k}</strong></p>
-        <div class="options">
-          ${choices.map((c,i)=>`<div class="opt" data-choice="${c}">${i+1}. ${c}</div>`).join('')}
-        </div>
-        <div style="margin-top:8px;color:var(--muted)">Câu ${quizState.idx+1}/${quizState.pool.length} — Điểm: ${quizState.score}</div>
-      `;
-      document.querySelectorAll('.opt').forEach(el=>el.addEventListener('click', onAnswer));
-    }
-
-    function onAnswer(e){
-      const selected = e.currentTarget.dataset.choice;
-      const cur = quizState.pool[quizState.idx];
-      if(selected === cur.han){ quizState.score++; e.currentTarget.style.borderColor='#72f'; e.currentTarget.style.background='#083'; }
-      else{ e.currentTarget.style.borderColor='#f44'; e.currentTarget.style.background='#300'; }
-      // highlight correct
-      document.querySelectorAll('.opt').forEach(el=>{ if(el.dataset.choice===cur.han){ el.style.outline='2px solid rgba(255,222,122,0.12)'; }});
-      quizState.idx++;
-      setTimeout(()=>{
-        if(quizState.idx >= quizState.pool.length){ quizArea.innerHTML = `<p class="question">Quiz hoàn thành — điểm: ${quizState.score}/${quizState.pool.length}</p><button id=retry>Chơi lại</button>`; document.getElementById('retry').addEventListener('click', startQuiz); }
-        else renderQuestion();
-      },900);
-    }
-
-    // Utilities
-    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
-    function shuffleArray(a){ const r=a.slice(); shuffle(r); return r; }
-    function pickN(arr,n){ const c = arr.slice(); shuffle(c); return c.slice(0,n); }
-
-    // Init
-    renderCards();
-
-  </script>
 </body>
 </html>
